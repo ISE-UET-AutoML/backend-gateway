@@ -1,19 +1,21 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-import config from './config/index.js';
+import helmet from 'helmet';
 import { createServiceProxy } from './core/proxyFactory.js';
 import { authMiddleware } from './middleware/auth.js';
 import { createServiceLimiter } from './middleware/rateLimiter.js';
+import config from './config/index.js';
 import logger from './utils/logger.js';
+import router from './routes/v1.js';
+// Load environment variables
+dotenv.config();
 
 const app = express();
+// Middleware
+app.use(helmet());
+app.use(cors());
 
-// Basic middleware
-app.use(cors({
-    origin: config.corsOrigin,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
 
 // Request logging
 app.use((req, res, next) => {
@@ -26,32 +28,20 @@ app.use((req, res, next) => {
     next();
 });
 
-// Body parsers - MUST come before proxy routes for POST requests
+// Health check
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', service: 'api-gateway' });
+});
+
+// User service routes
+app.use('/api/users', createServiceLimiter(), createServiceProxy("user"));
+
+// Data service routes
+app.use('/api/data', authMiddleware, createServiceLimiter(), createServiceProxy("data"));
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Public user service routes (no authentication required)
-app.use('/api/users/register', createServiceLimiter(), createServiceProxy('user', {
-    pathRewrite: {
-        '^/api/users/register': '/users/register'
-    }
-}));
-
-app.use('/api/users/validate', createServiceLimiter(), createServiceProxy('user', {
-    pathRewrite: {
-        '^/api/users/validate': '/users/validate'
-    }
-}));
-
-// Protected user service routes (authentication required)
-app.use('/api/users', authMiddleware, createServiceLimiter(), createServiceProxy('user', {
-    pathRewrite: {
-        '^/api/users': '/users'
-    }
-}));
-
-// Data service routes (authentication required)
-app.use('/api/data', authMiddleware, createServiceLimiter(), createServiceProxy('data'));
 
 // 404 handler
 app.use((req, res) => {
@@ -81,4 +71,4 @@ app.use((err, req, res, next) => {
     });
 });
 
-export default app; 
+export default app;
