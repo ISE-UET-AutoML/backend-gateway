@@ -7,8 +7,8 @@ const config = {
   env: process.env.NODE_ENV || 'development',
 
   // Security
-  jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
-  jwtExpiration: process.env.JWT_EXPIRATION || '1h',
+  accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+  refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
   corsOrigin: process.env.CORS_ORIGIN || '*',
 
   // Redis configuration
@@ -42,11 +42,14 @@ const config = {
   },
 
   services: {
-    user: {
+    users: {
       target: process.env.USER_SERVICE_URL || 'http://localhost:4001',
       pathRewrite: {
         '^/api/users': '/users'
-      }
+      },
+      pathFilter: [
+        '!/users/login'
+      ],
     },
     data: {
       target: process.env.DATA_SERVICE_URL || 'http://localhost:4002',

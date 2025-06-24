@@ -16,6 +16,11 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 
+// Parse JSON and urlencoded bodies BEFORE mounting router
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(router)
 
 // Request logging
 app.use((req, res, next) => {
@@ -28,20 +33,11 @@ app.use((req, res, next) => {
     next();
 });
 
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'api-gateway' });
 });
-
-// User service routes
-app.use('/api/users', createServiceLimiter(), createServiceProxy("user"));
-
-// Data service routes
-app.use('/api/data', authMiddleware, createServiceLimiter(), createServiceProxy("data"));
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // 404 handler
 app.use((req, res) => {
