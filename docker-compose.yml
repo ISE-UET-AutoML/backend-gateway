@@ -1,0 +1,25 @@
+services:
+  # change "user". for Ex: tuananhtd
+  # backend:
+  #   container_name: ${USER_NAME}_be_backend
+  #   depends_on:
+  #     - mongodb
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   networks:
+  #     - automl_network
+  redis:
+    image: redis:latest
+    container_name: ${USER_NAME}_be_redis
+    ports:
+      - ${REDIS_PORT}:6379
+    command: redis-server
+    networks:
+      - automl_network
+
+networks:
+  automl_network:
+    driver: bridge
+    name: ${USER_NAME}_be_automl
