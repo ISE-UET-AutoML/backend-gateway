@@ -47,14 +47,11 @@ const config = {
       pathRewrite: {
         '^/api/users': '/users'
       },
-      pathFilter: [
-        '!/users/login'
-      ],
     },
     data: {
       target: process.env.DATA_SERVICE_URL || 'http://localhost:4002',
       pathRewrite: {
-        '^/api/data': '/data'
+        '^/api/data': '/api/v1'
       }
     },
   },

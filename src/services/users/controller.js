@@ -10,10 +10,10 @@ class UserServiceController {
         } catch (error) {
             logger.error('Error in login controller', {
                 error: error.message,
-                response: error.response.data,
+                response: error.response?.data,
                 correlationId: req.correlationId
             });
-            res.status(400).json(error.response.data)
+            res.status(400).json(error.response?.data)
             // next(error);
         }
     }

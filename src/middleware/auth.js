@@ -14,9 +14,9 @@ export const authMiddleware = async (req, res, next) => {
       excludeList = await getExcludeList()
     }
     const token = req.headers.authorization?.split(' ')[1];
-    if (excludeList.includes(req.path.replace("/api", ""))) {
-      return next()
-    }
+    // if (excludeList.includes(req.originalUrl.replace("/api", ""))) {
+    //   return next()
+    // }
     
     if (!token) {
       throw new UnauthorizedError('No token provided');
