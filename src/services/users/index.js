@@ -4,7 +4,7 @@ import UserServiceController from './controller.js'
 const router = express.Router();
 
 // Route /login chỉ gọi hàm xử lý từ userService.js
-router.use('/login', UserServiceController.login);
+router.post('/login', UserServiceController.login);
 
 // Proxy các route khác
 

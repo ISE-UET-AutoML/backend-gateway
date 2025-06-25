@@ -6,7 +6,7 @@ class UserServiceController {
         const { email, password } = req.body
         try {
             const { accessToken, refreshToken, user } = await userService.handleLogin(email, password)
-            res.json({ accessToken, refreshToken, user})
+            res.json({ accessToken, refreshToken, user })
         } catch (error) {
             logger.error('Error in login controller', {
                 error: error.message,

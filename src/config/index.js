@@ -15,8 +15,9 @@ const config = {
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
 
   // Service URLs
-  userServiceUrl: process.env.USER_SERVICE_URL || 'http://localhost:4001',
+  userServiceUrl: process.env.USER_SERVICE_URL || 'http://localhost:10058',
   dataServiceUrl: process.env.DATA_SERVICE_URL || 'http://localhost:4002',
+  resourceServiceUrl: process.env.RESOURCE_SERVICE_URL || 'http://localhost:10757',
   ml: process.env.ML_SERVICE_URL || 'http://ml-service:3002',
   monitor: process.env.MONITOR_SERVICE_URL || 'http://monitor-service:3004',
   chatBot: process.env.CHATBOT_SERVICE_URL || 'http://chatbot-service:3005',
@@ -46,6 +47,7 @@ const config = {
       target: process.env.USER_SERVICE_URL || 'http://localhost:4001',
       pathRewrite: {
         '^/api/users': '/users'
+
       },
     },
     data: {
@@ -54,6 +56,30 @@ const config = {
         '^/api/data': '/api/v1'
       }
     },
+    resource: {
+      target: process.env.RESOURCE_SERVICE_URL || 'http://localhost:10757',
+      pathRewrite: {
+        '^/api/resource': '/'
+      }
+    },
+    ml: {
+      target: process.env.ML_SERVICE_URL || 'http://localhost:10750',
+      pathRewrite: {
+        '^/api/ml': '/'
+      }
+    },
+    resource: {
+      target: process.env.RESOURCE_SERVICE_URL || 'http://localhost:10757',
+      pathRewrite: {
+        '^/api/resource': '/'
+      }
+    },
+    ml: {
+      target: process.env.ML_SERVICE_URL || 'http://localhost:10750',
+      pathRewrite: {
+        '^/api/ml': '/'
+      }
+    }
   },
 };
 

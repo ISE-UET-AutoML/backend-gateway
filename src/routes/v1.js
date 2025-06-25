@@ -17,31 +17,31 @@ const __dirname = dirname(__filename);
 // Function to load service routes
 const loadServiceRoutes = async () => {
   const servicesDir = join(__dirname, '../services');
-  
+
   try {
     // Read all service directories
     const serviceDirs = readdirSync(servicesDir)
       .filter(file => statSync(join(servicesDir, file)).isDirectory());
 
-      // Load each service
-      for (const serviceName of serviceDirs) {
+    // Load each service
+    for (const serviceName of serviceDirs) {
+      try {
+        const servicePath = join(servicesDir, serviceName, 'index.js');
         try {
-          const servicePath = join(servicesDir, serviceName, 'index.js');
-          try {
-            const serviceModule = await import(servicePath);
-            const serviceRouter = serviceModule.default;
-            router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName), serviceRouter);
-          } catch (error) {
-            logger.info(`No custom routes for: ${serviceName}`)
-            router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName));
-          }
-        
-          
-          logger.info(`Loaded service routes for: ${serviceName}`);
+          const serviceModule = await import(servicePath);
+          const serviceRouter = serviceModule.default;
+          router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), serviceRouter, createServiceProxy(serviceName));
         } catch (error) {
-          logger.error(`Failed to load service: ${serviceName}`, { error: error.message });
+          logger.info(`No custom routes for: ${serviceName}`)
+          router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName));
         }
+
+
+        logger.info(`Loaded service routes for: ${serviceName}`);
+      } catch (error) {
+        logger.error(`Failed to load service: ${serviceName}`, { error: error.message });
       }
+    }
 
     // Health check endpoint
     router.get('/health', (req, res) => {
