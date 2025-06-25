@@ -20,9 +20,10 @@ class UserService {
         } catch (error) {
             logger.error('Error while logging in user', {
                 error: error.message,
+                response: error.response?.data,
                 email
             });
-            throw error.response?.data?.error || error;
+            throw error;
         }
     }
 
@@ -36,30 +37,36 @@ class UserService {
         } catch (error) {
             logger.error('Error saving refresh token', {
                 error: error.message,
+                response: error.response?.data,
                 userId
             });
-            throw error.response?.data?.error || error;
+            throw error;
         }
     }
 
     async handleLogin(email, password) {
-        // 1. Xác thực user
-        const user = await this.loginUser(email, password);
+        try {
+            // 1. Xác thực user
+            const user = await this.loginUser(email, password);
 
 
-        // 2. Tạo JWT token
-        const accessToken = generateJwtToken(user, config.accessTokenSecret, '1d');
+            // 2. Tạo JWT token
+            const accessToken = generateJwtToken(user, config.accessTokenSecret, '1d');
 
-        // 3. Tạo refreshToken và lưu vào user service
-        const refreshToken = generateJwtToken(user, config.refreshTokenSecret, '30d');
-        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 ngày
-        await this.saveRefreshToken(user.id, refreshToken, expiresAt);
-        // 4. Trả JWT và refreshToken về client
-        return {
-            accessToken, // sửa lại key đúng chuẩn
-            refreshToken,
-            user
-        };
+            // 3. Tạo refreshToken và lưu vào user service
+            const refreshToken = generateJwtToken(user, config.refreshTokenSecret, '30d');
+            const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 ngày
+            await this.saveRefreshToken(user.id, refreshToken, expiresAt);
+            // 4. Trả JWT và refreshToken về client
+            return {
+                accessToken, // sửa lại key đúng chuẩn
+                refreshToken,
+                user
+            };
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     async register(userData) {

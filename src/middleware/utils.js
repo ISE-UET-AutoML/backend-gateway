@@ -6,9 +6,9 @@ import { readdirSync, statSync } from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export const getWhiteList = async () => {
+export const getExcludeList = async () => {
   const servicesDir = join(__dirname, '../services');
-  let whiteList = []
+  let excludeList = []
     
     try {
       // Read all service directories
@@ -20,8 +20,8 @@ export const getWhiteList = async () => {
           try {
             const servicePath = join(servicesDir, serviceName, 'config.js');
             const serviceModule = await import(servicePath);
-            const currWhiteList = serviceModule.default.whiteList;
-            whiteList = [...whiteList, ...currWhiteList]
+            const currExcludeList = serviceModule.default.excludeList;
+            excludeList = [...excludeList, ...currExcludeList.map(p => `/${serviceName}` + p)]
           } catch (error) {
             continue
           }
@@ -31,5 +31,5 @@ export const getWhiteList = async () => {
           error: error.message,
         });
       } 
-    return whiteList
+    return excludeList
 }

@@ -1,14 +1,14 @@
 import config from '../../config/index.js';
 
-const whiteList = ['/register', '/validate', "/login"]
+const excludeList = ['/register', '/validate', "/login"]
 
 export default {
     ...config,
     timeout: 5000,
     retries: 3,
-    whiteList,
-    endpoint: [
-        ...whiteList,
+    excludeList,
+    endpoints: [
+        ...excludeList,
         '/projects'
     ]
 }; 

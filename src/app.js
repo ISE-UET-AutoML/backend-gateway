@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(router)
+
 
 // Request logging
 app.use((req, res, next) => {
@@ -32,6 +32,8 @@ app.use((req, res, next) => {
     });
     next();
 });
+
+app.use(router)
 
 
 // Health check
@@ -61,10 +63,14 @@ app.use((err, req, res, next) => {
         correlationId: req.correlationId
     });
 
-    res.status(500).json({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred'
-    });
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    // res.status(500).json({
+    //     error: 'Internal Server Error',
+    //     message: 'An unexpected error occurred'
+    // });
 });
 
 export default app;

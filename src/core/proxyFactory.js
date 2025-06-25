@@ -1,35 +1,38 @@
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import logger from '../utils/logger.js';
 import config from '../config/index.js';
-import { getWhiteList } from '../middleware/utils.js';
-const excludeList = await getWhiteList()
-
-const pathFilter = function (pathname, req) {
-  const path = pathname.replace("/api/users", '');
-  return !excludeList.includes(path);
+import { getExcludeList } from '../middleware/utils.js';
+const excludeList = await getExcludeList()
+const createPathFilter = (serviceName, excludeList) => {
+  return function pathFilter(pathname, req) {
+    const basePath = `/api`;
+    const trimmedPath = pathname.replace(basePath, '');
+    return !excludeList.includes(trimmedPath);
+  };
 };
+
 
 const createProxy = (serviceConfig) => {
   const {
     target,
+    serviceName,
+    excludeList,
     pathRewrite,
     timeout = 30000,
     retries = 3,
     onError
   } = serviceConfig;
 
-  return createProxyMiddleware({
+  const pathFilter = createPathFilter(serviceName, excludeList)
+
+  return createProxyMiddleware(pathFilter, {
     target,
     changeOrigin: true,
     pathRewrite,
-    pathFilter: pathFilter,
     timeout,
     proxyTimeout: timeout,
     retries,
-    headers: {
-      'Connection': 'keep-alive',
-      'Keep-Alive': 'timeout=5, max=1000'
-    },
+    
 
     onProxyReq: (proxyReq, req, res) => {
       proxyReq.setHeader('Accept', 'application/json');
@@ -44,16 +47,14 @@ const createProxy = (serviceConfig) => {
       }
 
 
-      if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.body) {
-        if (req.body && Object.keys(req.body).length > 0) {
-          const bodyData = JSON.stringify(req.body);
-          proxyReq.setHeader('Content-Type', 'application/json');
-          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-          proxyReq.write(bodyData);
-        } else {
-          // Empty body for POST requests
-          proxyReq.setHeader('Content-Length', '0');
-        }
+      if (req.body && Object.keys(req.body).length > 0) {
+        const bodyData = JSON.stringify(req.body);
+        proxyReq.setHeader('Content-Type', 'application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        proxyReq.write(bodyData);
+      } else {
+        // Empty body for POST requests
+        proxyReq.setHeader('Content-Length', '0');
       }
       
       // Log request
@@ -100,6 +101,8 @@ const createServiceProxy = (serviceName) => {
   
   return createProxy({
     target: serviceConfig.target,
+    serviceName: serviceName,
+    excludeList: excludeList.filter(item => item.startsWith(`/${serviceName}`)),
     pathRewrite: serviceConfig.pathRewrite,
     timeout: serviceConfig.timeout,
     retries: serviceConfig.retries,
