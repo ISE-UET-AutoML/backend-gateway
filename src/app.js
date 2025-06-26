@@ -2,10 +2,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { createServiceProxy } from './core/proxyFactory.js';
-import { authMiddleware } from './middleware/auth.js';
-import { createServiceLimiter } from './middleware/rateLimiter.js';
-import config from './config/index.js';
 import logger from './utils/logger.js';
 import router from './routes/v1.js';
 // Load environment variables
