@@ -6,25 +6,23 @@ import logger from '../utils/logger.js';
 import { createServiceProxy } from '../core/proxyFactory.js';
 import { createServiceLimiter } from '../middleware/rateLimiter.js';
 import { authMiddleware } from '../middleware/auth.js';
+import config from '../config/index.js'
 
 const router = express.Router();
 // Get current file path in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
+const availableServices = Object.keys(config.services)
+console.log(availableServices)
 
 // Function to load service routes
 const loadServiceRoutes = async () => {
   const servicesDir = join(__dirname, '../services');
   
   try {
-    // Read all service directories
-    const serviceDirs = readdirSync(servicesDir)
-      .filter(file => statSync(join(servicesDir, file)).isDirectory());
-
       // Load each service
-      for (const serviceName of serviceDirs) {
+      for (const serviceName of availableServices) {
         try {
           const servicePath = join(servicesDir, serviceName, 'index.js');
           try {
