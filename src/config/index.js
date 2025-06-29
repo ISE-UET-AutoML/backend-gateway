@@ -46,38 +46,37 @@ const config = {
     users: {
       target: process.env.USER_SERVICE_URL || 'http://localhost:4001',
       pathRewrite: {
-        '^/api/users': '/users'
-
+        '^/api/service/users': '/users'
       },
     },
     data: {
       target: process.env.DATA_SERVICE_URL || 'http://localhost:4002',
       pathRewrite: {
-        '^/api/data': '/api/v1'
+        '^/api/service/data': '/api/v1'
       }
     },
     resource: {
       target: process.env.RESOURCE_SERVICE_URL || 'http://localhost:10757',
       pathRewrite: {
-        '^/api/resource': '/'
+        '^/api/service/resource': '/'
       }
     },
     ml: {
       target: process.env.ML_SERVICE_URL || 'http://localhost:10750',
       pathRewrite: {
-        '^/api/ml': '/'
+        '^/api/service/ml': '/'
       }
     },
     resource: {
       target: process.env.RESOURCE_SERVICE_URL || 'http://localhost:10757',
       pathRewrite: {
-        '^/api/resource': '/'
+        '^/api/service/resource': '/'
       }
     },
     ml: {
       target: process.env.ML_SERVICE_URL || 'http://localhost:10750',
       pathRewrite: {
-        '^/api/ml': '/'
+        '^/api/service/ml': '/'
       }
     }
   },

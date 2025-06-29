@@ -28,10 +28,10 @@ const loadServiceRoutes = async () => {
           try {
             const serviceModule = await import(servicePath);
             const serviceRouter = serviceModule.default;
-            router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName), serviceRouter);
+            router.use(`/api/service/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName), serviceRouter);
           } catch (error) {
             logger.info(`No custom routes for: ${serviceName}`)
-            router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName));
+            router.use(`/api/service/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName));
           }
         
           

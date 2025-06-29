@@ -14,7 +14,7 @@ export const authMiddleware = async (req, res, next) => {
       excludeList = await getExcludeList()
     }
     const token = req.headers.authorization?.split(' ')[1];
-    if (excludeList.includes(req.originalUrl.replace("/api", ""))) {
+    if (excludeList.includes(req.originalUrl.replace("/api/service", ""))) {
       return next()
     }
 
@@ -44,7 +44,7 @@ export const authMiddleware = async (req, res, next) => {
 
     res.status(401).json({
       error: 'Unauthorized',
-      message: 'Invalid token'
+      message: error.message
     });
   }
 };

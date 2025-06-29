@@ -5,7 +5,7 @@ import { getExcludeList } from '../middleware/utils.js';
 const excludeList = await getExcludeList()
 const createPathFilter = (serviceName, excludeList) => {
   return function pathFilter(pathname, req) {
-    const basePath = `/api`;
+    const basePath = `/api/service`;
     const trimmedPath = pathname.replace(basePath, '');
     return !excludeList.includes(trimmedPath);
   };
