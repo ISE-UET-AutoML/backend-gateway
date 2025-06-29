@@ -14,7 +14,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const availableServices = Object.keys(config.services)
-console.log(availableServices)
 
 // Function to load service routes
 const loadServiceRoutes = async () => {
@@ -59,7 +58,7 @@ const loadCustomRoutes = async () => {
         const serviceRouter = serviceModule.default;
         
         // Mount service routes
-        router.use(`/api/${serviceName}`, serviceRouter);
+        router.use(`/api/${serviceName}`, authMiddleware, createServiceLimiter(), serviceRouter);
         
         logger.info(`Loaded custom service routes for: ${serviceName}`);
       } catch (error) {
@@ -73,5 +72,4 @@ const loadCustomRoutes = async () => {
 
 await loadServiceRoutes();
 await loadCustomRoutes();
-// console.log(router)
 export default router;

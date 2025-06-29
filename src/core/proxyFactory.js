@@ -1,29 +1,29 @@
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import logger from '../utils/logger.js';
 import config from '../config/index.js';
-import { getExcludeList } from '../middleware/utils.js';
-const excludeList = await getExcludeList()
-const createPathFilter = (serviceName, excludeList) => {
-  return function pathFilter(pathname, req) {
-    const basePath = `/api/service`;
-    const trimmedPath = pathname.replace(basePath, '');
-    return !excludeList.includes(trimmedPath);
-  };
-};
+// import { getExcludeList } from '../middleware/utils.js';
+// const excludeList = await getExcludeList()
+// const createPathFilter = (serviceName, excludeList) => {
+//   return function pathFilter(pathname, req) {
+//     const basePath = `/api/service`;
+//     const trimmedPath = pathname.replace(basePath, '');
+//     return !excludeList.includes(trimmedPath);
+//   };
+// };
 
 
 const createProxy = (serviceConfig) => {
   const {
     target,
-    serviceName,
-    excludeList,
+    // serviceName,
+    // excludeList,
     pathRewrite,
     timeout = 30000,
     retries = 3,
     onError
   } = serviceConfig;
 
-  const pathFilter = createPathFilter(serviceName, excludeList)
+  // const pathFilter = createPathFilter(serviceName, excludeList)
 
   return createProxyMiddleware({
     target,
@@ -101,8 +101,8 @@ const createServiceProxy = (serviceName) => {
   
   return createProxy({
     target: serviceConfig.target,
-    serviceName: serviceName,
-    excludeList: excludeList.filter(item => item.startsWith(`/${serviceName}`)),
+    // serviceName: serviceName,
+    // excludeList: excludeList.filter(item => item.startsWith(`/${serviceName}`)),
     pathRewrite: serviceConfig.pathRewrite,
     timeout: serviceConfig.timeout,
     retries: serviceConfig.retries,

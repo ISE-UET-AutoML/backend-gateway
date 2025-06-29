@@ -48,6 +48,7 @@ const config = {
       pathRewrite: {
         '^/api/service/users': '/users'
       },
+      excludeList: ['/login', '/register', '/saveRefreshToken']
     },
     data: {
       target: process.env.DATA_SERVICE_URL || 'http://localhost:4002',
@@ -83,7 +84,7 @@ const config = {
 };
 
 // Validate required configuration
-const requiredEnvVars = ['JWT_SECRET'];
+const requiredEnvVars = ['ACCESS_TOKEN_SECRET', 'REFRESH_TOKEN_SECRET'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {

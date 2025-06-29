@@ -14,7 +14,7 @@ export const authMiddleware = async (req, res, next) => {
       excludeList = await getExcludeList()
     }
     const token = req.headers.authorization?.split(' ')[1];
-    if (excludeList.includes(req.originalUrl.replace("/api/service", ""))) {
+    if (excludeList.includes(req.originalUrl.replace("/api", ""))) {
       return next()
     }
 

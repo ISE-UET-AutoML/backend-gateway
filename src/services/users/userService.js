@@ -46,7 +46,6 @@ class UserService {
 
     async handleLogin(email, password) {
         try {
-            console.log("login...")
             // 1. Xác thực user
             const user = await this.loginUser(email, password);
 
