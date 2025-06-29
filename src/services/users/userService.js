@@ -8,7 +8,7 @@ class UserService {
     constructor() {
         const serviceName = "/users"
         this.axios = axios.create({
-            baseURL: config.userServiceUrl + serviceName,
+            baseURL: `http://localhost:${config.port}/api/service${serviceName}`,
             timeout: 5000
         });
     }
@@ -46,6 +46,7 @@ class UserService {
 
     async handleLogin(email, password) {
         try {
+            console.log("login...")
             // 1. Xác thực user
             const user = await this.loginUser(email, password);
 

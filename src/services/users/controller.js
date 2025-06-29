@@ -13,7 +13,7 @@ class UserServiceController {
                 response: error.response?.data,
                 correlationId: req.correlationId
             });
-            res.status(400).json(error.response?.data)
+            res.status(400).json(error.response?.data || { "error": error.message })
             // next(error);
         }
     }
@@ -29,7 +29,7 @@ class UserServiceController {
                 respose: error.response?.data,
                 correlationId: req.correlationId
             });
-            res.status(400).json(error.response?.data)
+            res.status(400).json(error.response?.data || { "error": error.message })
             // next(error)
         }
     }

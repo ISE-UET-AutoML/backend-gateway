@@ -18,23 +18,11 @@ console.log(availableServices)
 
 // Function to load service routes
 const loadServiceRoutes = async () => {
-  const servicesDir = join(__dirname, '../services');
-
   try {
       // Load each service
       for (const serviceName of availableServices) {
         try {
-          const servicePath = join(servicesDir, serviceName, 'index.js');
-          try {
-            const serviceModule = await import(servicePath);
-            const serviceRouter = serviceModule.default;
-            router.use(`/api/service/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName), serviceRouter);
-          } catch (error) {
-            logger.info(`No custom routes for: ${serviceName}`)
-            router.use(`/api/service/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName));
-          }
-        
-          
+          router.use(`/api/service/${serviceName}`, authMiddleware, createServiceLimiter(), createServiceProxy(serviceName));
           logger.info(`Loaded service routes for: ${serviceName}`);
         } catch (error) {
           logger.error(`Failed to load service: ${serviceName}`, { error: error.message });
@@ -56,5 +44,34 @@ const loadServiceRoutes = async () => {
   }
 };
 
+const loadCustomRoutes = async () => {
+  const servicesDir = join(__dirname, '../services');
+  
+  try {
+    // Read all service directories
+    const serviceDirs = readdirSync(servicesDir).filter(file => statSync(join(servicesDir, file)).isDirectory());
+
+    // Load each service
+    for (const serviceName of serviceDirs) {
+      try {
+        const servicePath = join(servicesDir, serviceName, 'index.js');
+        const serviceModule = await import(servicePath);
+        const serviceRouter = serviceModule.default;
+        
+        // Mount service routes
+        router.use(`/api/${serviceName}`, serviceRouter);
+        
+        logger.info(`Loaded custom service routes for: ${serviceName}`);
+      } catch (error) {
+        logger.error(`Failed to load custom service: ${serviceName}`, { error: error.message });
+      }
+    }
+  } catch (error) {
+    logger.error('Failed to load custom services', { error: error.message });
+  }
+}
+
 await loadServiceRoutes();
+await loadCustomRoutes();
+// console.log(router)
 export default router;

@@ -1,6 +1,6 @@
 import config from '../../config/index.js';
 
-const excludeList = ['/register', '/validate', "/login"]
+const excludeList = ['/register', '/saveRefreshToken', "/login"]
 
 export default {
     ...config,
