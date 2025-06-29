@@ -25,7 +25,7 @@ const createProxy = (serviceConfig) => {
 
   const pathFilter = createPathFilter(serviceName, excludeList)
 
-  return createProxyMiddleware(pathFilter, {
+  return createProxyMiddleware({
     target,
     changeOrigin: true,
     pathRewrite,
