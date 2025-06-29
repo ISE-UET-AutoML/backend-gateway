@@ -1,5 +1,66 @@
 # Backend Gateway Service
 
+# Hướng dẫn
+## Thiết lập env
+Copy từ file env.example:
+- `USER_NAME`: tên của mình
+- `*_SERVICE_URL`: domain của các services
+
+## Thiết lập proxy
+Vào file src/config/index.js
+Ở phần services, thay thế phần pathRewrite thành base path tương ứng với từng service
+
+**Ví dụ:**
+
+User service có endpoint path là `http://localhost:10458/{BASE_PATH}` thì thêm đoạn này vào trong file:
+```js
+users: {
+    target: process.env.USER_SERVICE_URL || 'http://localhost:10458',
+        pathRewrite: {
+            '^/api/service/users': '/BASE_PATH'
+        },
+    },
+```
+
+Lúc này muốn check API thì gọi `http://localhost:3000/api/service/{service}/*`.
+
+**Ví dụ:**
+
+Thay vì gọi trực tiếp tới `http://localhost:10458/users/login`
+
+Sau khi thiết lập proxy thì gọi `http://locahost:3000/api/service/users/login`
+
+## Authenticate
+**Nếu cần bypass authenticate:**
+Tạo excludeList tương ứng với service ở `src/config/index.js`. Ví dụ:
+```js
+services: {
+    ...,
+    users: {
+      ...,
+      excludeList: ['/login', '/register', '/saveRefreshToken']
+    },
+    ...
+}
+```
+- Nếu cần bypass ở aggregation XXX thì tạo excludeList tương ứng với service ở `src/services/xxx/config.js`
+
+
+## Aggregation (optional)
+Nếu cần gọi tới nhiều endpoints ở nhiều service:
+- Tạo folder `XXX` ở trong src/services
+- Viết file config.js (optional)
+- Tạo các file controller của `XXX`, file index.js chứa các routes
+- Muốn check API thì gọi `http://localhost:3000/api/XXX`
+- Lưu ý: Trong controller dùng proxy để gọi tới các services liên quan và tổng hợp dữ liệu. Không gọi trực tiếp URL của service.
+
+## Chạy ##
+```bash
+npm install
+docker compose up -d
+npm run dev
+```
+
 ## Overview
 Backend Gateway Service is a robust API gateway that serves as the entry point for all client requests to our microservices architecture. It handles request routing, authentication, rate limiting, and other cross-cutting concerns.
 
