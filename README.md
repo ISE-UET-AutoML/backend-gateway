@@ -7,8 +7,8 @@ Copy từ file env.example:
 - `*_SERVICE_URL`: domain của các services
 
 ## Thiết lập proxy
-Vào file src/config/index.js
-Ở phần services, thay thế phần pathRewrite thành base path tương ứng với từng service
+Vào file `src/config/index.js`.
+Ở phần services, thay thế `pathRewrite` thành base path tương ứng với từng service
 
 **Ví dụ:**
 
@@ -59,6 +59,25 @@ Nếu cần gọi tới nhiều endpoints ở nhiều service:
 npm install
 docker compose up -d
 npm run dev
+```
+
+Chạy user_service, tạo user bằng cách POST `http://localhost:3000/api/users/register`.
+
+```json
+{
+  "email": "username@gmail.com",
+  "password": "password",
+  "full_name": "me"
+}
+```
+
+Đăng nhập bằng cách POST `http:localhost:3000/api/users/login`, gửi body json tương tự như trên.
+
+Copy `accessToken` và `user.id`, đưa vào headers:
+
+```
+x-user-id: {user.id}
+Authorization: <Bearer> {accessToken}
 ```
 
 ## Overview
